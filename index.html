@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Premium Widgets Inc. — Demo Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /*Full viewport*/
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
+    }
+
+    /*Full-screen wrapper*/
+    #page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 28px;
+      gap: 16px;
+    }
+
+    /*Floating toggle button*/
+    #log-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 32px;
+      background: #0f172a;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      transition: all 0.2s;
+      z-index: 100;
+    }
+
+    #log-toggle:hover {
+      background: #1e293b;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: blink 1.5s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.2
+      }
+    }
+
+    #layout {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /*Store panel*/
+    #store-panel {
+      width: 480px;
+      flex-shrink: 0;
+    }
+
+    .store-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      padding: 40px 36px;
+      width: 480px;
+      height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .store-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .brand-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .product-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 28px;
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #dcfce7;
+      color: #16a34a;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .product-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .product-desc {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 14px;
+    }
+
+    .product-price {
+      font-size: 38px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -1px;
+    }
+
+    .product-price span {
+      font-size: 17px;
+      font-weight: 500;
+      color: #64748b;
+    }
+
+    #buy-button {
+      width: 100%;
+      background: #0f172a;
+      color: white;
+      border: none;
+      padding: 15px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    #buy-button:hover {
+      background: #1e293b;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.25);
+    }
+
+    .store-footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /*Log panel */
+    #log-panel {
+      width: 0;
+      opacity: 0;
+      margin-left: 0;
+      overflow: hidden;
+      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #log-panel.open {
+      width: 480px;
+      opacity: 1;
+      margin-left: 24px;
+    }
+
+    .log-card {
+      background: #0f172a;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      width: 480px;
+      height: 480px;
+      overflow: hidden;
+    }
+
+    .log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      flex-shrink: 0;
+    }
+
+    .log-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    #close-log {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #94a3b8;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    #close-log:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    #log-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      scroll-behavior: smooth;
+      min-height: 0;
+    }
+
+    #log-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #log-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+    }
+
+    .log-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 2px solid transparent;
+      animation: appear 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .log-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .log-details {
+      display: none;
+      margin-left: 62px;
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+      color: #94a3b8;
+    }
+    
+    .log-row.expanded .log-details { display: block; }
+    
+    .log-expand-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      cursor: pointer;
+      font-size: 10px;
+      margin-left: auto;
+      padding: 3px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .log-expand-btn:hover { background: rgba(255, 255, 255, 0.15); color: white; }
+
+    .flow-step { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .flow-step:last-child { margin-bottom: 0; }
+    .step-icon { font-weight: bold; }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .log-row.type-open {
+      border-left-color: #f59e0b;
+    }
+
+    .log-row.type-success {
+      border-left-color: #10b981;
+    }
+
+    .log-row.type-error {
+      border-left-color: #ef4444;
+    }
+
+    .log-row.type-closed {
+      border-left-color: #6366f1;
+    }
+
+    .log-row .ts {
+      color: #475569;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-size: 10px;
+      padding-top: 2px;
+    }
+
+    .log-row .msg {
+      color: #cbd5e1;
+      word-break: break-word;
+    }
+
+    .t-open {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    .t-success {
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    .t-error {
+      color: #f87171;
+      font-weight: 600;
+    }
+
+    .t-closed {
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    .log-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.7;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .log-empty strong {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    #clear-btn {
+      margin: 12px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #64748b;
+      font-size: 12px;
+      font-family: inherit;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    #clear-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Floating Toggle -->
+  <button id="log-toggle">
+    <div class="live-dot"></div>
+    Callback Logs
+  </button>
+
+  <div id="page">
+    <!-- Side-by-side layout-->
+    <div id="layout">
+
+      <!-- Store card -->
+      <div id="store-panel">
+        <div class="store-card">
+          <div class="store-brand">
+            <div class="brand-dot">P</div>
+            <div class="brand-name">Premium Widgets Inc.</div>
+          </div>
+
+          <div id="product-view">
+            <div class="product-card">
+              <div class="product-badge">In Stock</div>
+              <div class="product-name">Super Widget Pro</div>
+              <div class="product-desc">The most advanced widget on the market.<br />Trusted by 10,000+ customers
+                worldwide.</div>
+              <div class="product-price">$99 <span>/ one-time</span></div>
+            </div>
+
+            <button id="buy-button">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Buy with Dodo Payments
+            </button>
+
+            <div class="store-footer">Secured by Dodo Payments.</div>
+          </div>
+
+          <div id="success-view" style="display: none; text-align: center; flex-direction: column; align-items: center; justify-content: center; animation: appear 0.4s ease;">
+            <div style="width: 64px; height: 64px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px;">
+              ✓
+            </div>
+            <h2 style="font-size: 24px; color: #0f172a; margin-bottom: 8px;">Order Confirmed!</h2>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Your payment was successful and your Super Widget Pro will be shipped shortly.</p>
+            <button id="shop-more-button" style="width: 100%; background: #f1f5f9; color: #0f172a; border: none; padding: 15px; font-size: 15px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: all 0.2s;">
+              Shop More
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log panel -->
+      <div id="log-panel">
+        <div class="log-card">
+          <div class="log-header">
+            <div class="log-title">
+              <div class="live-dot"></div>
+              Callback Logs
+            </div>
+            <button id="close-log">✕</button>
+          </div>
+
+          <div id="log-list">
+            <div class="log-empty">
+              <strong>📋</strong>
+              No logs yet.<br />Click "Buy with Dodo Payments"<br />to see events appear here.
+            </div>
+          </div>
+
+          <button id="clear-btn">Clear logs</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/demo.ts"></script>
+</body>
+
+</html>
